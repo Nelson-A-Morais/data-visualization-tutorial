@@ -1,6 +1,6 @@
 # Download data, unzip, etc.
 import pandas as pd
-import urllib
+import urllib.request  # Import 'urllib' when Python 2 is adopted
 import tempfile
 import shutil
 import zipfile
@@ -8,7 +8,7 @@ import zipfile
 temp_dir = tempfile.mkdtemp()
 data_source = 'http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip'
 zipname = temp_dir + '/Bike-Sharing-Dataset.zip'
-urllib.urlretrieve(data_source, zipname)
+urllib.request.urlretrieve(data_source, zipname)  # urllib.urlretrieve(data_source, zipname)
 
 zip_ref = zipfile.ZipFile(zipname, 'r')
 zip_ref.extractall(temp_dir)
@@ -21,3 +21,6 @@ drop_list = ['instant', 'season', 'yr', 'mnth', 'holiday', 'workingday', 'weathe
 daily_data.drop(drop_list, inplace=True, axis=1)
 
 shutil.rmtree(temp_dir)
+
+
+daily_data.head()
