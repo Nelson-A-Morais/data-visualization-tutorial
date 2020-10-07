@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 # In a notebook environment, display the plots inline
-%matplotlib inline
+'exec(%matplotlib inline)'  # Adopted from IPython
 
 # Set some parameters to apply to all plots. These can be overridden
 # in each plot if desired
