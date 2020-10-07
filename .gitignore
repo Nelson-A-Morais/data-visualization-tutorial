@@ -1,2 +1,5 @@
 # Define project settings
 .idea
+
+# Estabelish notebook marks
+.ipynb_checkpoints/
