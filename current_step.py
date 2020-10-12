@@ -253,3 +253,136 @@ densityplot(x_data=x_data,
             x_label='Check outs',
             y_label='Frequency',
             title='Distribution of Registered Check Outs')
+
+############################################# Step 5 ###########################################################
+
+# Calculate the mean and standard deviation for number of check outs
+# each day
+mean_total_co_day = daily_data[['weekday', 'cnt']].groupby('weekday').agg([np.mean, np.std])
+mean_total_co_day.columns = mean_total_co_day.columns.droplevel()
+
+# Define a function for a bar plot
+def barplot(x_data, y_data, error_data, x_label, y_label, title):
+    _, ax = plt.subplots()
+    # Draw bars, position them in the center of the tick mark on the x-axis
+    ax.bar(x_data, y_data, color='#539caf', align='center')
+    # Draw error bars to show standard deviation, set ls to 'none'
+    # to remove line between points
+    ax.errorbar(x_data, y_data, yerr=error_data, color='#297083', ls='none', lw=2, capthick=2)
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
+    ax.set_title(title)
+
+# Call the function to create plot
+barplot(x_data=mean_total_co_day.index.values,
+        y_data=mean_total_co_day['mean'],
+        error_data=mean_total_co_day['std'],
+        x_label='Day of week',
+        y_label='Check outs',
+        title='Total Check Outs By Day of Week (0 = Sunday)')
+
+
+mean_by_reg_co_day = daily_data[['weekday', 'registered', 'casual']].groupby('weekday').mean()
+mean_by_reg_co_day
+
+# Calculate the mean number of check outs for each day by
+# registration status
+mean_by_reg_co_day = daily_data[['weekday', 'registered', 'casual']].groupby('weekday').mean()
+# Calculate proportion of each category of user for each day
+mean_by_reg_co_day['total'] = mean_by_reg_co_day['registered'] + mean_by_reg_co_day['casual']
+mean_by_reg_co_day['reg_prop'] = mean_by_reg_co_day['registered'] / mean_by_reg_co_day['total']
+mean_by_reg_co_day['casual_prop'] = mean_by_reg_co_day['casual'] / mean_by_reg_co_day['total']
+
+# Define a function for a stacked bar plot
+def stackedbarplot(x_data, y_data_list, y_data_names, colors, x_label, y_label, title):
+    _, ax = plt.subplots()
+    # Draw bars, one category at a time
+    for i in range(0, len(y_data_list)):
+        if i == 0:
+            ax.bar(x_data, y_data_list[i], color=colors[i], align='center', label=y_data_names[i])
+        else:
+            # For each category after the first, the bottom of the
+            # bar will be the top of the last category
+            ax.bar(x_data, y_data_list[i], color=colors[i], bottom=y_data_list[i - 1], align='center',
+                   label=y_data_names[i])
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
+    ax.set_title(title)
+    ax.legend(loc='upper right')
+
+# Call the function to create plot
+stackedbarplot(x_data=mean_by_reg_co_day.index.values,
+               y_data_list=[mean_by_reg_co_day['reg_prop'], mean_by_reg_co_day['casual_prop']],
+               y_data_names=['Registered', 'Casual'],
+               colors=['#539caf', '#7663b0'],
+               x_label='Day of week',
+               y_label='Proportion of check outs',
+               title='Check Outs By Registration Status and Day of Week (0 = Sunday)')
+
+
+# Define a function for a grouped bar plot
+def groupedbarplot(x_data, y_data_list, y_data_names, colors, x_label, y_label, title):
+    _, ax = plt.subplots()
+    # Total width for all bars at one x location
+    total_width = 0.8
+    # Width of each individual bar
+    ind_width = total_width / len(y_data_list)
+    # This centers each cluster of bars about the x tick mark
+    alteration = np.arange(-(total_width / 2), total_width / 2, ind_width)
+
+    # Draw bars, one category at a time
+    for i in range(0, len(y_data_list)):
+        # Move the bar to the right on the x-axis so it doesn't
+        # overlap with previously drawn ones
+        ax.bar(x_data + alteration[i], y_data_list[i], color=colors[i], label=y_data_names[i], width=ind_width)
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
+    ax.set_title(title)
+    ax.legend(loc='upper right')
+
+# Call the function to create plot
+groupedbarplot(x_data=mean_by_reg_co_day.index.values,
+               y_data_list=[mean_by_reg_co_day['registered'], mean_by_reg_co_day['casual']],
+               y_data_names=['Registered', 'Casual'],
+               colors=['#539caf', '#7663b0'],
+               x_label='Day of week',
+               y_label='Check outs',
+               title='Check Outs By Registration Status and Day of Week (0 = Sunday)')
+
+
+# Unlike with bar plots, there is no need to aggregate the data
+# before plotting
+# However the data for each group (day) needs to be defined
+days = np.unique(daily_data['weekday'])
+bp_data = []
+for day in days:
+    bp_data.append(daily_data[daily_data['weekday'] == day]['cnt'].values)
+
+# Define a function to create a boxplot:
+def boxplot(x_data, y_data, base_color, median_color, x_label, y_label, title):
+    _, ax = plt.subplots()
+
+    # Draw boxplots, specifying desired style
+    ax.boxplot(y_data,
+               patch_artist=True,  # patch_artist must be True to control box fill
+               medianprops={'color': median_color},  # Properties of median line
+               boxprops={'color': base_color, 'facecolor': base_color},  # Properties of box
+               whiskerprops={'color': base_color},  # Properties of whiskers
+               capprops={'color': base_color}  # Properties of whisker caps
+    )
+
+    # By default, the tick label starts at 1 and increments by 1 for
+    # each box drawn. This sets the labels to the ones we want
+    ax.set_xticklabels(x_data)
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
+    ax.set_title(title)
+
+# Call the function to create plot
+boxplot(x_data=days,
+        y_data=bp_data,
+        base_color='#539caf',
+        median_color='#297083',
+        x_label='Day of week',
+        y_label='Check outs',
+        title='Total Check Outs By Day of Week (0 = Sunday)')
