@@ -198,6 +198,7 @@ histogram(data=daily_data['registered'],
           y_label='Frequency',
           title='Distribution of Registered Check Outs')
 
+
 # Define a function for an overlaid histogram
 def overlaid_histogram(data1, data1_name, data1_color, data2, data2_name, data2_color, x_label, y_label, title):
     # Set the bounds for the bins so that the two distributions are
@@ -226,3 +227,29 @@ overlaid_histogram(data1=daily_data['registered'],
                    x_label='Check outs',
                    y_label='Frequency',
                    title='Distribution of Check Outs By Type')
+
+
+# We must first create a density estimate from our data
+from scipy.stats import gaussian_kde
+data = daily_data['registered']
+density_est = gaussian_kde(data)
+# Control the 'smoothness'of the estimate. Higher values give
+# smoother estimates.
+density_est.covariance_factor = lambda : .25
+density_est._compute_covariance()
+x_data = np.arange(min(data), max(data), 200)
+
+# Define a function for a density plot
+def densityplot(x_data, density_est, x_label, y_label, title):
+    _, ax = plt.subplots()
+    ax.plot(x_data, density_est(x_data), color='#539caf', lw=2)
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
+    ax.set_title(title)
+
+# Call the function to create plot
+densityplot(x_data=x_data,
+            density_est=density_est,
+            x_label='Check outs',
+            y_label='Frequency',
+            title='Distribution of Registered Check Outs')
