@@ -71,11 +71,11 @@ def scatterplot(x_data, y_data, x_label, y_label, title):
     ax.set_ylabel(y_label)
 
 # Call the function to create plot
-scatterplot(x_data = daily_data['temp'],
-            y_data = daily_data['cnt'],
-            x_label = 'Normalized temperature (C)',
-            y_label = 'Check outs',
-            title = 'Number of Check Outs vs Temperature')
+scatterplot(x_data=daily_data['temp'],
+            y_data=daily_data['cnt'],
+            x_label='Normalized temperature (C)',
+            y_label='Check outs',
+            title='Number of Check Outs vs Temperature')
 
 
 # Perform linear regression
@@ -87,7 +87,7 @@ regr = sm.OLS(y, x)
 res = regr.fit()
 # Get fitted values from model to plot
 st, data, ss2 = summary_table(res, alpha=0.05)
-fitted_values = data[:,2]
+fitted_values = data[:, 2]
 
 # Define a function for the line plot
 def lineplot(x_data, y_data, x_label, y_label, title):
@@ -104,11 +104,11 @@ def lineplot(x_data, y_data, x_label, y_label, title):
     ax.set_ylabel(y_label)
 
 # Call the function to create plot
-lineplot(x_data = daily_data['temp'],
-         y_data = fitted_values,
-         x_label = 'Normalized temperature (C)',
-         y_label = 'Check outs',
-         title = 'Line of Best Fit for Number of Check Outs vs Temperature')
+lineplot(x_data=daily_data['temp'],
+         y_data=fitted_values,
+         x_label='Normalized temperature (C)',
+         y_label='Check outs',
+         title='Line of Best Fit for Number of Check Outs vs Temperature')
 
 
 # Get the confidence intervals of the model
@@ -182,7 +182,7 @@ lineplot2y(x_data=daily_data['dteday'],
            y2_label='Normalized windspeed',
            title='Check Outs and Windspeed Over Time')
 
-############################################# Step 3 ###########################################################
+############################################# Step 4 ###########################################################
 
 # Define a function for a histogram
 def histogram(data, x_label, y_label, title):
